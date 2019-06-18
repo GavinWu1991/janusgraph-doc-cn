@@ -143,25 +143,25 @@ scriptEngines: {
 
 在 <<server>> 中了解更多关于配置和使用JanusGraph Server的信息。
 
-===== Server Distribution
+===== 服务的分布
 
-The JanusGraph zip file contains a quick start server component that helps make it easier to get started with Gremlin Server and JanusGraph. Invoke `bin/janusgraph.sh start` to start Gremlin Server with Cassandra and Elasticsearch.
+JanusGraph的zip文件包含一个可以快速的启动服务器组件，可以帮助您更容易地开始使用Gremlin server和JanusGraph。调用 `bin/janusgraph.sh start` 来启动组合了Cassandra和Elasticsearch的Gremlin服务器。
 
-[NOTE]
-For security reasons Elasticsearch and therefore `janusgraph.sh` must be run under a non-root account
+[提示]
+出于安全原因，Elasticsearch 和 `janusgraph.sh` 必须在非root帐户下运行
 
 [[configuration-global]]
-=== Global Configuration
+=== 全局配置
 
-JanusGraph distinguishes between local and global configuration options. Local configuration options apply to an individual JanusGraph instance. Global configuration options apply to all instances in a cluster. More specifically, JanusGraph distinguishes the following five scopes for configuration options:
+JanusGraph区分本地和全局配置选项。本地配置选项应用于单个JanusGraph实例。全局配置选项适用于集群中的所有实例。更具体地说，JanusGraph为配置选项区分了以下五个范围:
 
-* *LOCAL*: These options only apply to an individual JanusGraph instance and are specified in the configuration provided when initializing the JanusGraph instance.
-* *MASKABLE*: These configuration options can be overwritten for an individual JanusGraph instance by the local configuration file. If the local configuration file does not specify the option, its value is read from the global JanusGraph cluster configuration.
-* *GLOBAL*: These options are always read from the cluster configuration and cannot be overwritten on an instance basis.
-* *GLOBAL_OFFLINE*: Like _GLOBAL_, but changing these options requires a cluster restart to ensure that the value is the same across the entire cluster.
-* *FIXED*: Like _GLOBAL_, but the value cannot be changed once the JanusGraph cluster is initialized.
+* *LOCAL*: 这些选项只适用于单个独立的JanusGraph实例，并在初始化JanusGraph实例时提供指定的配置。
+* *MASKABLE*: 这些配置选项可以通过本地配置文件覆盖到单个独立的JanusGraph实例。如果本地配置文件中没有指定该选项，则从JanusGraph集群的全局配置中读取其值。
+* *GLOBAL*: 这些选项总是从集群配置中读取，并且不能被实例自身的配置重写。
+* *GLOBAL_OFFLINE*: 与 _GLOBAL_ 类似, 但是更改这些选项时需要重新启动集群，以确保整个集群的值是相同的。
+* *FIXED*: 与 _GLOBAL_ 类似, 但是一旦JanusGraph集群初始化，该值就无法更改。
 
-When the first JanusGraph instance in a cluster is started, the global configuration options are initialized from the provided local configuration file. Subsequently changing global configuration options is done through JanusGraph's management API. To access the management API, call `g.getManagementSystem()` on an open JanusGraph instance handle `g`. For example, to change the default caching behavior on a JanusGraph cluster:
+当集群中的第一个JanusGraph实例启动时，将用提供的本地配置文件来初始化集群的全局配置选项。随后，通过JanusGraph的管理API更改来全局配置选项。要访问管理API，请在打开的JanusGraph实例句柄 `g` 上调用  `g.getManagementSystem()` 。例如，要更改JanusGraph集群中的默认缓存行为:
 
 [source, gremlin]
 ----
