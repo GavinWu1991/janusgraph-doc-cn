@@ -5,27 +5,19 @@
 == 配置
 
 一个JanusGraph图数据库的集群是由一个或者多个JanusGraph实例所组成的。为了打开一个JanusGraph实例，需要提供一个配置去指定如何设置JanusGraph。
-A JanusGraph graph database cluster consists of one or multiple JanusGraph instances. To open a JanusGraph instance, a configuration has to be provided which specifies how JanusGraph should be set up.
 
 JanusGraph配置指定JanusGraph应使用哪些组件，控制所有与JanusGraph部署的所有操作方面，并提供许多调整选项以从JanusGraph集群获得最大性能。
-A JanusGraph configuration specifies which components JanusGraph should use, controls all operational aspects of a JanusGraph deployment, and provides a number of tuning options to get maximum performance from a JanusGraph cluster.
 
 JanusGraph的配置至少需要定义持久性引擎作为JanusGraph使用的存储后端。 <<storage-backends>>中列出了所有支持的持久性引擎以及如何分别配置它们。
-At a minimum, a JanusGraph configuration must define the persistence engine that JanusGraph should use as a storage backend. <<storage-backends>> lists all supported persistence engines and how to configure them respectively.
 如果使用高级图形查询支持（比如全文搜索，地理位置搜索或者是区间查询）则需要配置一个额外的索引后端。有关详细信息，请参见<<index-backends>>。如果需要考虑查询的性能，那么应该启用缓存。缓存的配置和调优在<<caching>>中描述。
-If advanced graph query support (e.g full-text search, geo search, or range queries) is required an additional indexing backend must be configured.  See <<index-backends>> for details. If query performance is a concern, then caching should be enabled.  Cache configuration and tuning is described in <<caching>>.
 
 === 示例配置
-=== Example Configurations
 
 下面是一些示例配置文件，用于演示如何配置最常用的存储后端、索引系统和性能组件。这只涵盖了可用配置选项的一小部分。所有选项的完整列表请参考<<config-ref>>。
-Below are some example configuration files to demonstrate how to configure the most commonly used storage backends, indexing systems, and performance components. This covers only a tiny portion of the available configuration options. Refer to <<config-ref>> for the complete list of all options.
 
-==== Cassandra+Elasticsearch
 ==== Cassandra+Elasticsearch
 
 设置JanusGraph以使用本地运行的Cassandra持久化引擎和远程Elasticsearch索引系统:
-Sets up JanusGraph to use the Cassandra persistence engine running locally and a remote Elastic search indexing system:
 
 [source, properties]
 ----
@@ -38,10 +30,8 @@ index.search.elasticsearch.client-only=true
 ----
 
 ==== HBase+Caching
-==== HBase+Caching
 
 设置JanusGraph以使用远程运行的HBase持久化引擎，并使用JanusGraph的缓存组件来获得更好的性能。
-Sets up JanusGraph to use the HBase persistence engine running remotely and uses JanusGraph's caching component for better performance.
 
 [source, properties]
 ----
@@ -57,10 +47,8 @@ cache.db-cache-size = 0.5
 
 
 ==== BerkeleyDB
-==== BerkeleyDB
 
 设置JanusGraph以使用BerkeleyDB作为嵌入式持久化引擎，Elasticsearch作为嵌入式索引系统。
-Sets up JanusGraph to use BerkeleyDB as an embedded persistence engine with Elasticsearch as an embedded indexing system.
 
 [source, properties]
 ----
@@ -74,13 +62,10 @@ index.search.elasticsearch.local-mode=true
 ----
 
 <<config-ref>>中详细描述了所有的这些配置选项。JanusGraph发行版的+conf+目录中包含其他配置示例。
-<<config-ref>> describes all of these configuration options in detail. The +conf+ directory of the JanusGraph distribution contains additional configuration examples.
 
 ==== 更多的例子
-==== Further Examples
 
 在 `conf/` 目录中有几个示例配置文件，可以用来快速的使用JanusGraph。这些文件的路径可以传递到 `JanusGraphFactory.open(...)` 方法中，如下图所示:
-There are several example configuration files in the `conf/` directory that can be used to get started with JanusGraph quickly.  Paths to these files can be passed to `JanusGraphFactory.open(...)` as shown below:
 
 [source, java]
 ----
@@ -91,35 +76,29 @@ graph = JanusGraphFactory.open("conf/janusgraph-hbase.properties")
 ----
 
 
-===使用配置
-=== Using Configuration
+=== 使用配置
 
 如何为JanusGraph提供配置取决于实例化模式。
-How the configuration is provided to JanusGraph depends on the instantiation mode.
 
-==== JanusGraphFactory
 ==== JanusGraphFactory
 
 ===== Gremlin 控制台
-===== Gremlin Console
 
 JanusGraph发行版包含一个Gremlin命令行控制台，这使得启动JanusGraph并与之交互变得很容易。调用 `bin/gremlin.sh` (Unix/Linux) or `bin/gremlin.bat`
 (Windows) 来启动控制台，然后使用JanusGraphFactory工厂打开JanusGraph图形，工厂所需要的配置存储在一个可访问的属性配置文件中:
-The JanusGraph distribution contains a command line Gremlin Console which makes it easy to get started and interact with JanusGraph. Invoke `bin/gremlin.sh` (Unix/Linux) or `bin/gremlin.bat`
-(Windows) to start the Console and then open a JanusGraph graph using the factory with the configuration stored in an accessible properties configuration file:
 
 [source, gremlin]
 ----
 graph = JanusGraphFactory.open('path/to/configuration.properties')
 ----
 
-===== JanusGraph Embedded
+===== 嵌入式的JanusGraph
 
-JanusGraphFactory can also be used to open an embedded JanusGraph graph instance from within a JVM-based user application. In that case, JanusGraph is part of the user application and the application can call upon JanusGraph directly through its public API.
+JanusGraphFactory还可以从基于jvm的用户应用程序中打开嵌入式的JanusGraph图形实例。在这种情况下，JanusGraph是用户应用程序的一部分，应用程序可以通过其公共API直接访问JanusGraph。
 
-===== Short Codes
+===== 极少的代码
 
-If the JanusGraph graph cluster has been previously configured and/or only the storage backend needs to be defined, JanusGraphFactory accepts a colon-separated string representation of the storage backend name and hostname or directory.
+如果JanusGraph 图形集群已经预先配置，并且/或者只需要定义存储后端，JanusGraphFactory可以接受被冒号分隔的含有存储后端名称和主机名或目录的字符串表示。
 
 [source, gremlin]
 ----
@@ -132,17 +111,17 @@ graph = JanusGraphFactory.open('berkeleyje:/tmp/graph')
 ----
 
 
-==== JanusGraph Server
+==== JanusGraph 服务
 
-JanusGraph, by itself, is simply a set of jar files with no thread of execution.  There are two basic patterns for connecting to, and using a JanusGraph database:
+JanusGraph本身只是一组没有执行线程的jar文件。连接和使用JanusGraph数据库有两种基本模式:
 
-.Patterns
-. JanusGraph can be used by embedding JanusGraph calls in a client program where the program provides the thread of execution.
-. JanusGraph packages a long running server process that, when started, allows a remote client or logic running in a separate program to make JanusGraph calls.  This long running server process is called *JanusGraph Server*.
+.模式
+. JanusGraph可以通过在客户端程序中嵌入JanusGraph调用来使用，该程序提供了执行线程。
+. JanusGraph包装了一个可以长时间运行的服务器进程，当启动时，允许远程客户端或代码逻辑运行在一个单独的程序中进行JanusGraph调用。这个长时间运行的服务器进程称为 *JanusGraph Server* 。
 
-For the JanusGraph Server, JanusGraph uses https://tinkerpop.apache.org/docs/{tinkerpop_version}/reference#gremlin-server[Gremlin Server] of the https://tinkerpop.apache.org/[Apache TinkerPop] stack to service client requests.  JanusGraph provides an out-of-the-box configuration for a quick start with JanusGraph Server, but the configuration can be changed to provide a wide range of server capabilities.
+对于JanusGraph服务，JanusGraph使用 https://tinkerpop.apache.org/[Apache TinkerPop] 技术栈中的 https://tinkerpop.apache.org/docs/{tinkerpop_version}/reference#gremlin-server[Gremlin Server] 来服务客户机请求。JanusGraph提供了一个开箱即用的配置，可以快速启动JanusGraph Server，但是可以更改配置以提供广泛的服务器功能。
 
-Configuring JanusGraph Server is accomplished through a JanusGraph Server yaml configuration file located in the ./conf/gremlin-server directory in the JanusGraph distribution. To configure JanusGraph Server with a graph instance (`JanusGraph`), the JanusGraph Server configuration file requires the following settings:
+配置JanusGraph 服务器是通过JanusGraph Server yaml配置文件完成的，该文件位于JanusGraph发行版中的./conf/gremlin-server目录中。要使用一个图形实例(`JanusGraph`)来配置JanusGraph服务器，那么JanusGraph服务器配置文件需要以下设置:
 
 [source, yaml]
 ----
@@ -160,9 +139,9 @@ scriptEngines: {
 ...
 ----
 
-The entry for `graphs` defines the bindings to specific `JanusGraph` configurations. In the above case it binds `graph` to a JanusGraph configuration at `conf/janusgraph-berkeleyje.properties`.  The `plugins` entry enables the JanusGraph Gremlin Plugin, which enables auto-imports of JanusGraph classes so that they can be referenced in remotely submitted scripts.
+`graphs` 条目定义 `JanusGraph` 特性的配置绑定。在上面的例子中，它将 `graph` 绑定到位于 `conf/janusgraph-berkeleyje.properties` 的JanusGraph配置。`plugins` 条目开启了JanusGraph Gremlin插件，从而启用了JanusGraph类的自动导入，以便可以在远程提交的脚本中引用它们。
 
-Learn more about configuring and using JanusGraph Server in <<server>>.
+在 <<server>> 中了解更多关于配置和使用JanusGraph Server的信息。
 
 ===== Server Distribution
 
