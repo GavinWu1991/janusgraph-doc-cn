@@ -15,12 +15,16 @@ At a minimum, a JanusGraph configuration must define the persistence engine that
 如果使用高级图形查询支持（比如全文搜索，地理位置搜索或者是区间查询）则需要配置一个额外的索引后端。有关详细信息，请参见<<index-backends>>。如果需要考虑查询的性能，那么应该启用缓存。缓存的配置和调优在<<caching>>中描述。
 If advanced graph query support (e.g full-text search, geo search, or range queries) is required an additional indexing backend must be configured.  See <<index-backends>> for details. If query performance is a concern, then caching should be enabled.  Cache configuration and tuning is described in <<caching>>.
 
+=== 示例配置
 === Example Configurations
 
+下面是一些示例配置文件，用于演示如何配置最常用的存储后端、索引系统和性能组件。这只涵盖了可用配置选项的一小部分。所有选项的完整列表请参考<<config-ref>>。
 Below are some example configuration files to demonstrate how to configure the most commonly used storage backends, indexing systems, and performance components. This covers only a tiny portion of the available configuration options. Refer to <<config-ref>> for the complete list of all options.
 
 ==== Cassandra+Elasticsearch
+==== Cassandra+Elasticsearch
 
+设置JanusGraph以使用本地运行的Cassandra持久化引擎和远程Elasticsearch索引系统:
 Sets up JanusGraph to use the Cassandra persistence engine running locally and a remote Elastic search indexing system:
 
 [source, properties]
@@ -34,7 +38,9 @@ index.search.elasticsearch.client-only=true
 ----
 
 ==== HBase+Caching
+==== HBase+Caching
 
+设置JanusGraph以使用远程运行的HBase持久化引擎，并使用JanusGraph的缓存组件来获得更好的性能。
 Sets up JanusGraph to use the HBase persistence engine running remotely and uses JanusGraph's caching component for better performance.
 
 [source, properties]
@@ -51,7 +57,9 @@ cache.db-cache-size = 0.5
 
 
 ==== BerkeleyDB
+==== BerkeleyDB
 
+设置JanusGraph以使用BerkeleyDB作为嵌入式持久化引擎，Elasticsearch作为嵌入式索引系统。
 Sets up JanusGraph to use BerkeleyDB as an embedded persistence engine with Elasticsearch as an embedded indexing system.
 
 [source, properties]
@@ -65,10 +73,13 @@ index.search.elasticsearch.client-only=false
 index.search.elasticsearch.local-mode=true
 ----
 
+<<config-ref>>中详细描述了所有的这些配置选项。JanusGraph发行版的+conf+目录中包含其他配置示例。
 <<config-ref>> describes all of these configuration options in detail. The +conf+ directory of the JanusGraph distribution contains additional configuration examples.
 
+==== 更多的例子
 ==== Further Examples
 
+在 `conf/` 目录中有几个示例配置文件，可以用来快速的使用JanusGraph。这些文件的路径可以传递到 `JanusGraphFactory.open(...)` 方法中，如下图所示:
 There are several example configuration files in the `conf/` directory that can be used to get started with JanusGraph quickly.  Paths to these files can be passed to `JanusGraphFactory.open(...)` as shown below:
 
 [source, java]
@@ -80,14 +91,20 @@ graph = JanusGraphFactory.open("conf/janusgraph-hbase.properties")
 ----
 
 
+===使用配置
 === Using Configuration
 
+如何为JanusGraph提供配置取决于实例化模式。
 How the configuration is provided to JanusGraph depends on the instantiation mode.
 
 ==== JanusGraphFactory
+==== JanusGraphFactory
 
+===== Gremlin 控制台
 ===== Gremlin Console
 
+JanusGraph发行版包含一个Gremlin命令行控制台，这使得启动JanusGraph并与之交互变得很容易。调用 `bin/gremlin.sh` (Unix/Linux) or `bin/gremlin.bat`
+(Windows) 来启动控制台，然后使用JanusGraphFactory工厂打开JanusGraph图形，工厂所需要的配置存储在一个可访问的属性配置文件中:
 The JanusGraph distribution contains a command line Gremlin Console which makes it easy to get started and interact with JanusGraph. Invoke `bin/gremlin.sh` (Unix/Linux) or `bin/gremlin.bat`
 (Windows) to start the Console and then open a JanusGraph graph using the factory with the configuration stored in an accessible properties configuration file:
 
