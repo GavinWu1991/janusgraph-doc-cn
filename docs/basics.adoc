@@ -176,55 +176,54 @@ mgmt.commit()
 // Changes take effect
 ----
 
-==== Changing Offline Options
+==== 改变离线选项
 
-Changing configuration options does not affect running instances and only applies to newly started ones. Changing _GLOBAL_OFFLINE_ configuration options requires restarting the cluster so that the changes take effect immediately for all instances.
-To change _GLOBAL_OFFLINE_ options follow these steps:
+更改配置选项并不影响正在运行的实例，只适用于新启动的实例。更改 _GLOBAL_OFFLINE_ 配置选项需要重新启动集群，以便立即对所有实例生效。
+要更改 _GLOBAL_OFFLINE_ 选项，请执行以下步骤:
 
-* Close all but one JanusGraph instance in the cluster
-* Connect to the single instance
-* Ensure all running transactions are closed
-* Ensure no new transactions are started (i.e. the cluster must be offline)
-* Open the management API
-* Change the configuration option(s)
-* Call commit which will automatically shut down the graph instance
-* Restart all instances
+* 关闭集群中除一个JanusGraph实例外的所有实例
+* 连接到单个实例
+* 确保所有正在运行的事务都已关闭
+* 确保没有启动任何新事务(即集群必须离线)
+* 打开管理API
+* 更改配置选项
+* 调用commit，它将自动关闭图实例
+* 重启所有实例
 
-Refer to the full list of configuration options in <<config-ref>> for more information including the configuration scope of each option.
+有关更多信息，包括每个选项的配置范围，请参考 <<config-ref>> 中完整的配置选项列表。
 
 
-[[schema]]
-== Schema and Data Modeling
+[[模式\Schema]]
+== 模式和数据模型
 
-Each JanusGraph graph has a schema comprised of the edge labels, property keys, and vertex labels used therein. A JanusGraph schema can either be explicitly or implicitly defined. Users are encouraged to explicitly define the graph schema during application development. An explicitly defined schema is an important component of a robust graph application and greatly improves collaborative software development. Note, that a JanusGraph schema can be evolved over time without any interruption of normal database operations. Extending the schema does not slow down query answering and does not require database downtime.
+每个JanusGraph图都有一个模式，由其中使用的边缘标签、属性键和顶点标签组成。JanusGraph的模式可以显式定义，也可以隐式定义。鼓励用户在应用程序开发期间显式定义图形模式。显式定义的模式是健壮的图应用程序的一个重要组成部分并且极大地改进了软件协作开发。注意，JanusGraph模式可以在不中断正常数据库操作的情况下随时间发展。扩展模式不会降低查询的响应速度，也不需要数据库停机。
 
-The schema type - i.e. edge label, property key, or vertex label - is assigned to elements in the graph - i.e. edge, properties or vertices respectively - when they are first created. The assigned schema type cannot be changed for a particular element. This ensures a stable type system that is easy to reason about.
+模式中的类型(即边标签、属性键或顶点标签)会在图中元素(即边、属性或顶点)首次创建时被分配。不能为特定元素更改指定的模式类型。很容易推理出这是为了确保了一个稳定的类型系统。
 
-Beyond the schema definition options explained in this section, schema types provide performance tuning options that are discussed in <<advanced-schema>>.
+除了本节解释的模式定义选项之外，模式类型还提供了性能调优选项，这些选项在 <<高级模式>> 中进行了讨论。
 
-=== Displaying Schema Information
-There are methods to view specific elements of the graph schema within the management API.
-These methods are `mgmt.printIndexes()`, `mgmt.printPropertyKeys()`, `mgmt.printVertexLabels()`, and `mgmt.printEdgeLabels()`.
-There is also a method that displays all the combined output named `printSchema()`.
-
+=== 显示模式信息
+有一些方法可以通过管理API查看图形模式中的特定元素。
+这些方法是 `mgmt.printIndexes()`, `mgmt.printPropertyKeys()`, `mgmt.printVertexLabels()`, 以及 `mgmt.printEdgeLabels()`.
+还有一个名为 `printSchema()` 的方法可以显示所有组合的输出。
 [source, gremlin]
 mgmt = graph.openManagement()
 mgmt.printSchema()
 
-=== Defining Edge Labels
+=== 定义标签边缘(Edge Label)
 
-Each edge connecting two vertices has a label which defines the semantics of the relationship. For instance, an edge labeled `friend` between vertices A and B encodes a friendship between the two individuals.
+连接两个顶点的每条边都有一个定义关系语义的标签。例如，在顶点A和顶点B之间标记为 `friend` 的边译成两个个体之间的友谊。
 
-To define an edge label, call `makeEdgeLabel(String)` on an open graph or management transaction and provide the name of the edge label as the argument. Edge label names must be unique in the graph. This method returns a builder for edge labels that allows to define its multiplicity. The *multiplicity* of an edge label defines a multiplicity constraint on all edges of this label, that is, a maximum number of edges between pairs of vertices. JanusGraph recognizes the following multiplicity settings.
+要定义边缘标签，请在打开的图形或管理事务上调用 `makeEdgeLabel(String)` ，并提供边缘标签的名称作为参数。边缘标签名称在图中必须是唯一的。此方法返回一个用于边缘标签的生成器，该生成器允许定义其 *多样性* 。边标签的 *多样性* 定义了该标签所有边的多样性约束，即一对顶点之间的最大边数。JanusGraph可以识别以下多样性设置。
 
-==== Edge Label Multiplicity
+==== 边标签多样性
 
-.Multiplicity Settings
-* *MULTI*: Allows multiple edges of the same label between any pair of vertices. In other words, the graph is a _multi graph_ with respect to such edge label. There is no constraint on edge multiplicity.
-* *SIMPLE*: Allows at most one edge of such label between any pair of vertices. In other words, the graph is a _simple graph_ with respect to the label. Ensures that edges are unique for a given label and pairs of vertices.
-* *MANY2ONE*: Allows at most one outgoing edge of such label on any vertex in the graph but places no constraint on incoming edges. The edge label `mother` is an example with MANY2ONE multiplicity since each person has at most one mother but mothers can have multiple children.
-* *ONE2MANY*: Allows at most one incoming edge of such label on any vertex in the graph but places no constraint on outgoing edges. The edge label `winnerOf` is an example with ONE2MANY multiplicity since each contest is won by at most one person but a person can win multiple contests.
-* *ONE2ONE*:  Allows at most one incoming and one outgoing edge of such label on any vertex in the graph. The edge label 'marriedTo' is an example with ONE2ONE multiplicity since a person is married to exactly one other person.
+.多样性设置
+* *MULTI*: 允许同一标签的多条边位于任意一对顶点之间。换句话说，对于这样的边标签，图是一个 _multi graph_ 。对边的多样性没有约束。
+* *SIMPLE*: 允许任意一对顶点之间同一标签的边最多只有一条。换句话说，该图是关于标签的 _simple graph_ 。确保对于给定的标签和顶点对，边是唯一的。
+* *MANY2ONE*: 允许在图中的任意顶点上最多有一条这样的标签的输出边，但不限制传入边。边缘标签 `mother` 是MANY2ONE多样性的一个例子，因为每个人最多有一个母亲，但母亲可以有多个孩子。
+* *ONE2MANY*: 允许在图中的任意顶点上最多有一条这样的标签的传入边，但不限制输出边。边缘标签 `winnerOf` 就是一个具有ONE2MANY多样性的例子，因为每个比赛最多由一个人赢得，但是一个人可以赢得多个比赛。
+* *ONE2ONE*: 允许在图形的任何顶点上最多有一条这样标签的传入或输出的边。边缘标签 `marriedTo` 就是一个例子，因为一个人只和另一个人结婚，所以有ONE2ONE多样性。
 
 The default multiplicity is MULTI. The definition of an edge label is completed by calling the `make()` method on the builder which returns the defined edge label as shown in the following example.
 
